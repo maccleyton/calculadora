@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmos Calc Fusion</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #f0f0f0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .main-layout {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .graphics-section {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      canvas {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      #calc-app {
+        min-width: 350px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cosmos Calc Fusion</h1>
+    <div class="main-layout">
+      <div class="section" id="calc-app"></div>
+      <div class="section graphics-section">
+        <div>
+          <h3>Gráfico 2D: y = sin(x)</h3>
+          <canvas id="canvas2d" width="480" height="320" style="border:1px solid #ccc"></canvas>
+        </div>
+        <div>
+          <h3>Superfície 3D: z = sin(x)·cos(y)</h3>
+          <canvas id="canvas3d" width="480" height="320" style="border:1px solid #ccc"></canvas>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>
