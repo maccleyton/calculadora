@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos Workspace | Hub Central</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+    <style>
+        /* ------------------------------------------------------------------
+         * DESIGN SYSTEM COSMOS
+         * ------------------------------------------------------------------ */
+        :root {
+            /* Cores Base */
+            --bg-app: #000000;
+            --bg-panel: rgba(10, 10, 10, 0.75);
+            --bg-card: #111111;
+            
+            /* Bordas */
+            --border-subtle: 1px solid rgba(255, 255, 255, 0.08);
+            --border-active: 1px solid rgba(255, 255, 255, 0.2);
+            
+            /* Texto */
+            --text-primary: #ededed;
+            --text-secondary: #888888;
+            
+            /* Accents (Identidade dos Módulos) */
+            --accent-blue: #2997ff;   /* Texto/Assets/Biblio */
+            --accent-purple: #bf5af2; /* Layout/Mídia/Estilos */
+            --accent-green: #30d158;  /* Interativo */
+            --accent-orange: #ff9f0a; /* Fórmulas */
+            --accent-red: #ff453a;    /* Fontes/PDF */
+            --accent-gold: #ffcc00;   /* Science Lab */
+            
+            /* UX */
+            --radius-md: 12px;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --topbar-height: 56px;
+        }
+
+		/* =========================================
+		   SCROLLBAR GLOBAL (Afeta todos os elementos)
+		   ========================================= */
+
+		/* Aplica a todos os elementos que scrollam */
+		*::-webkit-scrollbar {
+			width: 8px;  /* Largura padrão vertical */
+			height: 8px; /* Altura padrão horizontal */
+		}
+
+		/* Fundo da trilha */
+		*::-webkit-scrollbar-track {
+			background: transparent; 
+		}
+
+		/* O "polegar" que a gente arrasta */
+		*::-webkit-scrollbar-thumb {
+			background-color: #333; /* Cinza escuro */
+			border-radius: 4px;     /* Arredondado */
+			border: 2px solid transparent; /* Truque para criar margem interna (padding) */
+			background-clip: content-box;  /* Faz o border transparente funcionar */
+		}
+
+		/* Hover no polegar */
+		*::-webkit-scrollbar-thumb:hover {
+			background-color: #555; /* Cinza mais claro ao passar o mouse */
+		}
+
+		/* Canto onde as barras se encontram (se houver scroll X e Y) */
+		*::-webkit-scrollbar-corner {
+			background: transparent;
+		}
+
+        /* --- Reset e Base --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Menu Superior (Header) --- */
+        #top-nav {
+            height: var(--topbar-height);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            flex-shrink: 0;
+            user-select: none;
+            overflow-x: auto;
+            gap: 4px;
+            z-index: 50;
+        }
+        #top-nav::-webkit-scrollbar { height: 0px; }
+
+        .nav-tab {
+            padding: 6px 12px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover { background-color: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .nav-tab.active { background-color: rgba(255,255,255,0.1); color: var(--text-primary); border: var(--border-subtle); }
+
+        .nav-tab.home-btn { font-weight: 700; color: var(--accent-blue); margin-right: 16px; padding-left: 0; font-size: 14px; }
+        .nav-tab.home-btn:hover { background: transparent; filter: brightness(1.2); }
+
+        /* --- Área de Conteúdo Principal --- */
+        #content-area {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 60%);
+        }
+
+        /* --- HUB (Grid) --- */
+        .hub-container {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hub-header { text-align: center; margin-bottom: 40px; animation: fadeIn 0.5s ease; }
+        .hub-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .beta-tag { font-size: 11px; padding: 2px 6px; border: 1px solid #333; border-radius: 4px; color: #666; vertical-align: middle; margin-left: 8px; font-weight: 400; -webkit-text-fill-color: #888;}
+
+        /* GRID RESPONSIVO AJUSTADO */
+        .hub-grid {
+            display: grid;
+            /* minmax(260px, 1fr) garante:
+               - Telas pequenas: 1 ou 2 colunas
+               - Laptop/FullHD: ~4 colunas
+               - Ultrawide: 5 ou 6 colunas
+            */
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 1600px; /* Aumentado para suportar telas grandes */
+            padding-bottom: 60px;
+            animation: slideUp 0.5s ease;
+        }
+
+        .hub-card {
+            background-color: var(--bg-card);
+            border: var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: 220px; /* Altura um pouco maior para elegância */
+            position: relative;
+            overflow: hidden;
+            justify-content: center;
+        }
+
+        .hub-card:hover {
+            transform: translateY(-6px);
+            background-color: #161616;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
+        }
+        .hub-card:hover .card-icon { transform: scale(1.15); }
+
+        .card-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+        .card-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; max-width: 90%; }
+
+        .card-number {
+            position: absolute; top: 15px; left: 15px;
+            font-size: 10px; color: #333; font-weight: 700; font-family: var(--font-mono);
+        }
+
+        .card-link-icon {
+            position: absolute; top: 15px; right: 15px; font-size: 18px; color: #333; opacity: 0; transition: 0.2s;
+        }
+        .hub-card:hover .card-link-icon { opacity: 1; color: #fff; }
+
+        /* Animações */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <nav id="top-nav">
+        <div class="nav-tab home-btn active">🪐 COSMOS HUB</div>
+        <a href="./modules/editor.html" class="nav-tab" title="Editor"><img alt="Editor" src="./assets/toolbar/editor.svg"/></a>
+        <a href="./modules/layout.html" class="nav-tab" title="Editoração"><img alt="Editoração" src="./assets/toolbar/layout.svg"/></a>
+        <a href="./modules/image_editor.html" class="nav-tab" title="Editor de Imagens"><img alt="Editor de Imagens" src="./assets/toolbar/image_editor.svg"/></a>
+        <a href="./modules/interactive_form.html" class="nav-tab" title="Fórmulas Interativas"><img alt="Fórmulas Interativas" src="./assets/toolbar/interactive_form.svg"/></a>
+        <a href="./modules/mathematical_lab.html" class="nav-tab" title="Laboratório Matemático"><img alt="Laboratório Matemático" src="./assets/toolbar/mathematical_lab.svg"/></a>
+        <a href="./modules/science_lab.html" class="nav-tab" title="Laboratório Científico"><img alt="Laboratório Científico" src="./assets/toolbar/science_lab.svg"/></a>
+        <a href="./modules/tools.html" class="nav-tab" title="Ferramentas"><img alt="Ferramentas" src="./assets/toolbar/tools.svg"/></a>
+        <a href="./modules/image_bank.html" class="nav-tab" title="Banco de Imagens"><img alt="Banco de Imagens" src="./assets/toolbar/image_bank.svg"/></a>
+        <a href="./modules/source_bank.html" class="nav-tab" title="Banco de Fontes"><img alt="Banco de Fontes" src="./assets/toolbar/source_bank.svg"/></a>
+        <a href="./modules/formula_bank.html" class="nav-tab" title="Banco de Fórmulas"><img alt="Banco de Fórmulas" src="./assets/toolbar/formula_bank.svg"/></a>
+        <a href="./modules/style_bank.html" class="nav-tab" title="Banco de Estilos"><img alt="Banco de Estilos" src="./assets/toolbar/style_bank.svg"/></a>
+        <a href="./modules/library.html" class="nav-tab" title="Biblioteca Interna"><img alt="Biblioteca Interna" src="./assets/toolbar/library.svg"/></a>
+    </nav>
+
+    <div id="content-area">
+        <div class="hub-container">
+            <div class="hub-header">
+                <h1>Cosmos Workspace <span class="beta-tag">v4.0</span></h1>
+                <p style="color: var(--text-secondary);">Sistema Operacional Criativo para Editoração e Ciência.</p>
+            </div>
+
+            <div class="hub-grid">
+                
+                <div class="hub-card" onclick="openModule('./modules/editor.html')">
+                    <div class="card-number">01</div>
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Editor de Textos</div>
+                    <div class="card-desc">Escrita em Markdown/LaTeX com preview A4 em tempo real.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/layout.html')">
+                    <div class="card-number">02</div>
+                    <div class="card-icon" style="color:var(--accent-purple)">📐</div>
+                    <div class="card-title">Layout</div>
+                    <div class="card-desc">Diagramação de livros, capas, spreads e sumários.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/image_editor.html')">
+                    <div class="card-number">03</div>
+                    <div class="card-icon" style="color:var(--accent-purple)">🖼️</div>
+                    <div class="card-title">Editor de Imagens</div>
+                    <div class="card-desc">Manipulação de mídia, camadas e vetores estilo Photoshop.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/interactive_form.html')">
+                    <div class="card-number">04</div>
+                    <div class="card-icon" style="color:var(--accent-green)">⚡</div>
+                    <div class="card-title">Fórmulas Interativas</div>
+                    <div class="card-desc">Plotagem de gráficos e simulação matemática de dados.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/mathematical_lab.html')">
+                    <div class="card-number">05</div>
+                    <div class="card-icon" style="color:var(--accent-orange)">🧮</div>
+                    <div class="card-title">Laboratório Matemático</div>
+                    <div class="card-desc">Editor dedicado de código LaTeX puro e renderização.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+
+                <div class="hub-card" onclick="openModule('./modules/science_lab.html')">
+                    <div class="card-number">06</div>
+                    <div class="card-icon" style="color:var(--accent-gold)">🧪</div>
+                    <div class="card-title">Laboratório Científico</div>
+                    <div class="card-desc">Simulações físicas (pêndulos, óptica) e químicas.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+
+                <div class="hub-card" onclick="openModule('./modules/tools.html')">
+                    <div class="card-number">07</div>
+                    <div class="card-icon" style="color:var(--accent-red)">🛠️</div>
+                    <div class="card-title">Ferramentas</div>
+                    <div class="card-desc">Organizar, unir, comprimir e proteger documentos.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+
+                <div class="hub-card" onclick="openModule('./modules/image_bank.html')">
+                    <div class="card-number">08</div>
+                    <div class="card-icon" style="color:var(--accent-blue)">📂</div>
+                    <div class="card-title">Banco de Imagens</div>
+                    <div class="card-desc">Gestão de ativos digitais (DAM), tags e metadados.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/source_bank.html')">
+                    <div class="card-number">09</div>
+                    <div class="card-icon" style="color:var(--accent-red)">Aa</div>
+                    <div class="card-title">Banco de Fontes</div>
+                    <div class="card-desc">Gerenciador e visualizador de tipografia (TypeLab).</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/formula_bank.html')">
+                    <div class="card-number">10</div>
+                    <div class="card-icon" style="color:var(--accent-orange)">📈</div>
+                    <div class="card-title">Banco de Fórmulas</div>
+                    <div class="card-desc">Repositório de conhecimento e equações prontas.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/style_bank.html')">
+                    <div class="card-number">11</div>
+                    <div class="card-icon" style="color:var(--accent-purple)">🎨</div>
+                    <div class="card-title">Banco de Estilos</div>
+                    <div class="card-desc">Design System Manager, tokens CSS e componentes.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+                
+                <div class="hub-card" onclick="openModule('./modules/library.html')">
+                    <div class="card-number">12</div>
+                    <div class="card-icon" style="color:var(--accent-blue)">📖</div>
+                    <div class="card-title">Biblioteca Interna</div>
+                    <div class="card-desc">Central de projetos, versionamento e publicações.</div>
+                    <span class="material-icons card-link-icon">arrow_forward</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navegação Simples
+        function openModule(url) {
+            window.location.href = url;
+        }
+    </script>
+	<script>
+		// Configuração da API (Ajuste para a porta que apareceu no seu Swagger)
+		const API_URL = "http://localhost:5253/api"; 
+
+		async function checkSystemStatus() {
+			try {
+				const response = await fetch(`${API_URL}/System/status`);
+				const data = await response.json();
+				
+				console.log("Sistema Conectado:", data);
+				
+				// Exemplo: Atualiza um elemento na tela (se houver)
+				// Se você tiver um elemento com id="server-status", ele vai ficar verde
+				// document.getElementById('server-status').style.color = '#30d158'; 
+				// document.getElementById('server-status').innerText = "Online";
+				
+				alert(`Conectado ao Cosmos Core!\nStatus: ${data.status}\nMemória: ${data.memoryUsage}`);
+				
+			} catch (error) {
+				console.error("Erro ao conectar no Backend:", error);
+				alert("O Backend C# parece estar desligado.");
+			}
+		}
+
+		// Tenta conectar assim que abrir
+		checkSystemStatus();
+	</script>	
+</body>
+</html>
